@@ -1,45 +1,105 @@
 package com.example.stationtracker;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.stationtracker.Model.Station;
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Toolbar toolbar;
-    DrawerLayout drawerLayout;
+    DrawerLayout drawerLayout;  // تعریف متغیر
     NavigationView navigationView;
-    ActionBarDrawerToggle toggle;  // Toggle button reference
+    private RecyclerView recyclerView;
+    private StationAdapter stationAdapter;
+    private List<Station> stationList;
+    private RequestQueue requestQueue;
+    private static final String URL = "http://172.20.2.26:8000/api/stations/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_menu);  // مطمئن شوید که طرح‌بندی صحیح بارگذاری شده است
+        setContentView(R.layout.activity_main);
+        drawerLayout = findViewById(R.id.drawerLayout);
+        // اتصال RecyclerView
+        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // تنظیم تولبار به عنوان اکشن‌بار
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        // آماده‌سازی داده‌ها
+        stationList = new ArrayList<>();
+        stationAdapter = new StationAdapter(stationList);
 
-        // ارتباط دادن DrawerLayout و NavigationView
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.navigation);
+        // اتصال adapter به RecyclerView
+        recyclerView.setAdapter(stationAdapter);
 
-        // ایجاد ActionBarDrawerToggle و اضافه کردن آن به DrawerLayout
-        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();  // این خط باعث نمایش آیکون toggle در تولبار می‌شود
+        // ایجاد RequestQueue برای Volley
+        requestQueue = Volley.newRequestQueue(this);
 
-        // اضافه کردن listener برای NavigationView
-        navigationView.setNavigationItemSelectedListener(this);
+        // بارگذاری ایستگاه‌ها از سرور
+        loadStationsFromServer();
+    }
+
+    private void loadStationsFromServer() {
+        Utf8StringRequest  stringRequest = new Utf8StringRequest (Request.Method.GET, URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject stationObject = jsonArray.getJSONObject(i);
+
+                        // استخراج اطلاعات هر ایستگاه
+                        Station station = new Station(
+                                stationObject.getInt("id"),
+                                stationObject.getString("Title"),
+                                stationObject.getString("Line"),
+                                stationObject.getString("Address")
+                        );
+
+                        // اضافه کردن ایستگاه به لیست
+                        stationList.add(station);
+                    }
+
+                    // به‌روزرسانی آداپتر
+                    stationAdapter.notifyDataSetChanged();
+                    Log.d("Stations", "Loaded " + stationList.size() + " stations.");
+                } catch (JSONException e) {
+                    Log.e("Volley", "JSON Parsing error: " + e.getMessage());
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Volley", "Error fetching stations: " + error.getMessage());
+            }
+        });
+
+        // ارسال درخواست به سرور
+        requestQueue.add(stringRequest);
     }
 
     @Override

@@ -6,4 +6,5 @@
     <string name="user">user</string>
     <string name="navigation_drawer_open">open</string>
     <string name="navigation_drawer_close">close</string>
+    <string name="nav_header_desc">User description goes here</string>
 </resources>
