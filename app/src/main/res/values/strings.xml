@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">StationTracker</string>
+    <string name="about">about</string>
+    <string name="search">search</string>
+    <string name="home">home</string>
+    <string name="user">user</string>
+    <string name="navigation_drawer_open">open</string>
+    <string name="navigation_drawer_close">close</string>
+</resources>
