@@ -63,7 +63,7 @@ public class StationActivity extends AppCompatActivity {
                     @Override
                     protected Map<String, String> getParams() throws AuthFailureError {
                         Log.d("StationActivity", "Preparing request parameters");
-                        Map<String, String> params = new HashMap<>();
+                      /*  Map<String, String> params = new HashMap<>();
                         params.put("Line", "1");
                         params.put("English_title", "shademan");
                         params.put("Lat", "0");
@@ -71,8 +71,8 @@ public class StationActivity extends AppCompatActivity {
                         params.put("Title", "شادمان");
                         params.put("Lang", "0");
                         params.put("Address", "شادمان");
-                        return params;
-                     /*  Map<String, String> params = new HashMap<>();
+                        return params;*/
+                       Map<String, String> params = new HashMap<>();
                         params.put("Title", edt_title.getText().toString());
                         params.put("English_title", edt_english_title.getText().toString());
                         params.put("Line", edt_line.getText().toString());
@@ -81,7 +81,7 @@ public class StationActivity extends AppCompatActivity {
                         params.put("Lang", edt_Lang.getText().toString());
                         params.put("Description", edt_Description.getText().toString());
                         Log.d("StationActivity", "Request parameters: " + params.toString());
-                        return params;*/
+                        return params;
                     }
 
                     @Override
