@@ -13,6 +13,9 @@ public class Station {
         this.address = address;
     }
 
+    public Station(String title, String englishTitle, String line, String address, String lat, String lang, String description) {
+    }
+
     public int getId() {
         return id;
     }
