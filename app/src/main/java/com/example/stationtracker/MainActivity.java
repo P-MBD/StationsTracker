@@ -1,5 +1,6 @@
 package com.example.stationtracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -45,6 +46,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.nav_view);
+
+        // تنظیم کردن Listener برای آیتم‌های منو
+        navigationView.setNavigationItemSelectedListener(this);
+
         // اتصال RecyclerView
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -114,11 +120,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (itemId == R.id.action_home) {
             Toast.makeText(this, "Home selected", Toast.LENGTH_SHORT).show();
-        } else if (itemId == R.id.action_user) {
-            Toast.makeText(this, "User selected", Toast.LENGTH_SHORT).show();
+        } else if (itemId == R.id.action_station) {
+            // باز کردن StationActivity
+            Intent intentStation = new Intent(MainActivity.this, StationActivity.class);
+            startActivity(intentStation);
         }
 
-        drawerLayout.closeDrawer(GravityCompat.START);  // بستن منو بعد از انتخاب آیتم
+        // بستن منو بعد از انتخاب آیتم
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }
